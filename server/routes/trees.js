@@ -183,16 +183,33 @@ router.delete('/:id', async (req, res, next) => {
  *     - Value: Tree not found
  */
 router.put('/:id', async (req, res, next) => {
-    try {
-        // Your code here
-    } catch(err) {
+    const {id} = req.params
+
+    const {name, location, height, size} = req.body
+
+    const updateTree = await Tree.findByPk(id)
+
+    if (updateTree) {
+        updateTree.tree = name
+        updateTree.location = location
+        updateTree.heightFt = height
+        updateTree.groundCircumferenceFt = size
+        await updateTree.save()
+        return res.json({
+            status: "success",
+            message: "successfully updated tree",
+            data: updateTree
+        })
+    } else {
         next({
             status: "error",
-            message: 'Could not update new tree',
-            details: err.errors ? err.errors.map(item => item.message).join(', ') : err.message
+            message: 'Could not update new tree or find it',
+            details: `${id} does not match ${req.body.id}`
         });
     }
 });
+
+
 
 /**
  * INTERMEDIATE BONUS PHASE 1 (OPTIONAL), Step B:
